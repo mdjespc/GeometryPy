@@ -5,6 +5,7 @@ from pygame.time import Clock
 from pygame.math import Vector2
 from sprites.objects import *
 from sprites.avatar import Avatar
+from sprites.avatar import AVATAR_IMAGE
 from levels.level import Level
 
 pygame.init()
@@ -19,7 +20,7 @@ FPS = 60
 
 #Load background and player image
 BACKGROUND_IMAGE = pygame.image.load("sprites\\images\\bg.png")
-AVATAR_IMAGE = pygame.image.load("sprites\\images\\avatar.png")
+
 
 
 class Player:

@@ -3,8 +3,8 @@ import csv
 from sprites.objects import *
 
 #Load all level object images
-BLOCK_IMAGE = pygame.image.load("sprites\\images\\block_1.png")
-SPIKE_IMAGE = pygame.image.load("sprites\\images\\obj-spike.png")
+BLOCK_IMAGE = pygame.transform.scale(pygame.image.load("sprites\\images\\block_1.png"), (32, 32))
+SPIKE_IMAGE = pygame.transform.scale(pygame.image.load("sprites\\images\\obj-spike.png"), (32, 32))
 YELLOW_ORB_IMAGE = pygame.image.load("sprites\\images\\orb-yellow.png")
 
 class Level:
@@ -46,10 +46,13 @@ class Level:
         
         for row, elements in enumerate(self.level_list):
             for column, element_id in enumerate(elements):
+                pos = (column * 32, row * 32)
                 if element_id == "-1": pass
                 elif element_id == "0":
                     self.level_elements.append(
-                        Block(image = BLOCK_IMAGE, pos = (column * 32, row * 32))
+                        Block(image = BLOCK_IMAGE, pos = pos)
                         ) 
+                elif element_id == "Spike":
+                    self.level_elements.append(Spike(image = SPIKE_IMAGE, pos = pos))
         
 

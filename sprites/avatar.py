@@ -1,5 +1,7 @@
 import pygame
 
+AVATAR_IMAGE = pygame.transform.scale(pygame.image.load("sprites\\images\\avatar.png"), (32, 32))
+
 class Avatar(pygame.sprite.Sprite):
     def __init__(self, image, pos, *groups):
         super().__init__()
