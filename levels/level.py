@@ -5,7 +5,7 @@ from sprites.objects import *
 #Load all level object images
 BLOCK_IMAGE = pygame.transform.scale(pygame.image.load("sprites\\images\\block_1.png"), (32, 32))
 SPIKE_IMAGE = pygame.transform.scale(pygame.image.load("sprites\\images\\obj-spike.png"), (32, 32))
-YELLOW_ORB_IMAGE = pygame.image.load("sprites\\images\\orb-yellow.png")
+YELLOW_ORB_IMAGE = pygame.transform.scale(pygame.image.load("sprites\\images\\orb-yellow.png"), (32, 32))
 
 class Level:
     '''
@@ -52,7 +52,9 @@ class Level:
                     self.level_elements.append(
                         Block(image = BLOCK_IMAGE, pos = pos)
                         ) 
-                elif element_id == "Spike":
+                elif element_id == "1":
                     self.level_elements.append(Spike(image = SPIKE_IMAGE, pos = pos))
+                elif element_id == "2":
+                    self.level_elements.append(Orb(image = YELLOW_ORB_IMAGE, pos = pos))
         
 

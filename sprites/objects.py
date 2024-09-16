@@ -34,4 +34,4 @@ class Spike(Object):
 
 class Orb(Object):
     def __init__(self, image, pos, *groups):
-        super().__init__(*groups)
+        super().__init__(image, pos, *groups)
