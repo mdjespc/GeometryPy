@@ -21,7 +21,7 @@ FPS = 60
 #Load background and player image
 BACKGROUND_IMAGE = pygame.image.load("sprites\\images\\bg.png")
 
-
+player_group = pygame.sprite.Group()
 
 class Player:
   '''
@@ -38,6 +38,7 @@ class Player:
     self.image = image
     self.pos = pos
     self.avatar = Avatar(self.image, self.pos)
+    self.rect = self.image.get_rect()
 
     self.vel = Vector2(0, 0)
     self.jump_height = 32
@@ -47,20 +48,33 @@ class Player:
   def jump(self):
     self.vel.y = -self.jump_height
 
+  def check_collisions(self, level: Level):
+    for obj in level.all_elements:
+      if pygame.Rect.colliderect(self.rect, obj.rect):
+        self.is_grounded = True
+        print("Collided!")
+        return
+    self.is_grounded = False
+
+
   def update(self):
     if self.is_jumping and self.is_grounded:
       self.jump()
 
     if not self.is_grounded:
-      self.vel.y = min(self.vel.y + GRAVITY.y, 100) #Hardcapping falling speed at 100.
+      self.vel.y = min(self.vel.y + GRAVITY.y, 50) #Hardcapping falling speed at 50.
+    else:
+      self.vel.y = -self.vel.y
 
     #Update the position the avatar should have
     self.pos = (self.pos[0], self.pos[1] + self.vel.y)
-
+    self.rect.x = self.pos[0]
+    self.rect.y = self.pos[1]
     self.avatar.update(self.pos)
 
   def draw(self, surf):
     self.avatar.draw(surf)
+    pygame.draw.rect(surf, "white", self.rect, 1)
 
 
 TEST_PLAYER = Player(AVATAR_IMAGE, (width//2, height//2))
@@ -86,6 +100,7 @@ while True:
     element.update()
 
   TEST_PLAYER.update()
+  TEST_PLAYER.check_collisions(TEST_LEVEL)
  
 
   TEST_PLAYER.draw(surf)

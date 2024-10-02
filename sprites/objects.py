@@ -10,6 +10,8 @@ class Object(pygame.sprite.Sprite):
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.center = pos
+        for group in groups:
+            group.add(self)
     
     def update(self, *args, **kwargs):
         self.rect.x -= 1

@@ -16,6 +16,10 @@ class Level:
     def __init__(self, level_id):
         self.level_path = f"levels\\level_{level_id}.csv"
         self.level_elements = []
+        self.all_elements = pygame.sprite.Group()
+        self.all_blocks = pygame.sprite.Group()
+        self.all_spikes = pygame.sprite.Group()
+        self.all_orbs = pygame.sprite.Group()
     
     def load_file(self):
         '''
@@ -49,12 +53,25 @@ class Level:
                 pos = (column * 32, row * 32)
                 if element_id == "-1": pass
                 elif element_id == "0":
+                    obj = Block(BLOCK_IMAGE, pos, self.all_elements, self.all_blocks)
                     self.level_elements.append(
-                        Block(image = BLOCK_IMAGE, pos = pos)
+                        obj
                         ) 
+                    self.all_elements.add(obj)
+                    self.all_blocks.add(obj)
                 elif element_id == "1":
-                    self.level_elements.append(Spike(image = SPIKE_IMAGE, pos = pos))
+                    obj = Spike(SPIKE_IMAGE, pos, self.all_elements, self.all_spikes)
+                    self.level_elements.append(
+                        obj
+                        )
+                    self.all_elements.add(obj)
+                    self.all_spikes.add(obj)
                 elif element_id == "2":
-                    self.level_elements.append(Orb(image = YELLOW_ORB_IMAGE, pos = pos))
+                    obj = Orb(YELLOW_ORB_IMAGE, pos, self.all_elements, self.all_orbs)
+                    self.level_elements.append(
+                        obj
+                        )
+                    self.all_elements.add(obj)
+                    self.all_orbs.add(obj)
         
 
