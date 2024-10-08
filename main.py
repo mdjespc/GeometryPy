@@ -41,12 +41,12 @@ class Player:
     self.rect = self.image.get_rect()
 
     self.vel = Vector2(0, 0)
-    self.jump_height = 32
+    self.jump_height = 16
     self.is_jumping = False
     self.is_grounded = False
     
   def jump(self):
-    self.vel.y = -self.jump_height
+    self.vel.y = self.jump_height
 
   def check_collisions(self, level: Level):
     for obj in level.all_elements:
@@ -62,7 +62,7 @@ class Player:
       self.jump()
 
     if not self.is_grounded:
-      self.vel.y = min(self.vel.y + GRAVITY.y, 50) #Hardcapping falling speed at 50.
+      self.vel.y = min(self.vel.y + GRAVITY.y, 16) #Hardcapping falling speed at 16.
     else:
       self.vel.y = -self.vel.y
 
@@ -77,10 +77,36 @@ class Player:
     pygame.draw.rect(surf, "white", self.rect, 1)
 
 
+def rotate_sprite(surf, image, pos, originpos, angle):
+  w, h = image.get_size()
+  box = [Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
+  box_rotate = [p.rotate(angle) for p in box]
+
+  # make sure the player does not overlap, uses a few lambda functions(new things that we did not learn about number1)
+  min_box = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
+  max_box = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
+  # calculate the translation of the pivot
+  pivot = Vector2(originpos[0], -originpos[1])
+  pivot_rotate = pivot.rotate(angle)
+  pivot_move = pivot_rotate - pivot
+
+  # calculate the upper left origin of the rotated image
+  origin = (pos[0] - originpos[0] + min_box[0] - pivot_move[0], pos[1] - originpos[1] - max_box[1] + pivot_move[1])
+
+  # get a rotated image
+  rotated_image = pygame.transform.rotozoom(image, angle, 1)
+
+  # rotate and blit the image
+  surf.blit(rotated_image, origin)
+
+
 TEST_PLAYER = Player(AVATAR_IMAGE, (width//2, height//2))
 TEST_LEVEL = Level(1)
 TEST_LEVEL.load_file()
 TEST_LEVEL.load_elements()
+
+angle = 0
+
 while True:
   #Handle Event
   for event in pygame.event.get():
@@ -100,6 +126,10 @@ while True:
     element.update()
 
   TEST_PLAYER.update()
+  if TEST_PLAYER.is_jumping:
+    angle -= 8.1712
+    rotate_sprite(surf, TEST_PLAYER.image, TEST_PLAYER.rect.center, (16, 16), angle)
+
   TEST_PLAYER.check_collisions(TEST_LEVEL)
  
 

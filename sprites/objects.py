@@ -14,7 +14,7 @@ class Object(pygame.sprite.Sprite):
             group.add(self)
     
     def update(self, *args, **kwargs):
-        self.rect.x -= 1
+        self.rect.x -= 2
 
 
     def draw(self, surf):
