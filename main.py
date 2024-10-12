@@ -23,7 +23,7 @@ BACKGROUND_IMAGE = pygame.image.load("sprites\\images\\bg.png")
 
 player_group = pygame.sprite.Group()
 
-class Player:
+class Player(pygame.sprite.Sprite):
   '''
   Controls an Avatar object, whose position is dictated by
   an instance of this class. 
@@ -35,13 +35,14 @@ class Player:
   is_grounded: bool
 
   def __init__(self, image, pos):
+    super().__init__()
     self.image = image
     self.pos = pos
     self.avatar = Avatar(self.image, self.pos)
     self.rect = self.image.get_rect()
 
     self.vel = Vector2(0, 0)
-    self.jump_height = 16
+    self.jump_height = -16
     self.is_jumping = False
     self.is_grounded = False
     
@@ -49,11 +50,13 @@ class Player:
     self.vel.y = self.jump_height
 
   def check_collisions(self, level: Level):
-    for obj in level.all_elements:
-      if pygame.Rect.colliderect(self.rect, obj.rect):
-        self.is_grounded = True
-        print("Collided!")
-        return
+    collided_sprite = pygame.sprite.spritecollideany(self, level.all_blocks)
+    if collided_sprite:
+      #Snap player to the collided block
+      self.rect.bottom = collided_sprite.rect.top
+      self.is_grounded = True
+      return
+    
     self.is_grounded = False
 
 
@@ -64,7 +67,7 @@ class Player:
     if not self.is_grounded:
       self.vel.y = min(self.vel.y + GRAVITY.y, 16) #Hardcapping falling speed at 16.
     else:
-      self.vel.y = -self.vel.y
+      self.vel.y = -0.1
 
     #Update the position the avatar should have
     self.pos = (self.pos[0], self.pos[1] + self.vel.y)
@@ -74,7 +77,7 @@ class Player:
 
   def draw(self, surf):
     self.avatar.draw(surf)
-    pygame.draw.rect(surf, "white", self.rect, 1)
+    pygame.draw.rect(surf, "white", self.rect, 2)
 
 
 def rotate_sprite(surf, image, pos, originpos, angle):
@@ -101,6 +104,7 @@ def rotate_sprite(surf, image, pos, originpos, angle):
 
 
 TEST_PLAYER = Player(AVATAR_IMAGE, (width//2, height//2))
+player_group.add(TEST_PLAYER.avatar)
 TEST_LEVEL = Level(1)
 TEST_LEVEL.load_file()
 TEST_LEVEL.load_elements()
@@ -119,6 +123,8 @@ while True:
 
   if keys[pygame.K_SPACE]:
     TEST_PLAYER.is_jumping = True
+    print("jump")
+    TEST_PLAYER.update()
 
   surf.fill((244, 250, 252))
   surf.blit(BACKGROUND_IMAGE, (0, 0))
