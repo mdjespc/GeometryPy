@@ -42,32 +42,40 @@ class Player(pygame.sprite.Sprite):
     self.rect = self.image.get_rect()
 
     self.vel = Vector2(0, 0)
-    self.jump_height = -16
+    self.jump_height = -10
     self.is_jumping = False
     self.is_grounded = False
     
   def jump(self):
     self.vel.y = self.jump_height
+    print("jump function")
 
   def check_collisions(self, level: Level):
-    collided_sprite = pygame.sprite.spritecollideany(self, level.all_blocks)
+    collided_sprite = pygame.sprite.spritecollideany(self, level.all_elements)
     if collided_sprite:
-      #Snap player to the collided block
-      self.rect.bottom = collided_sprite.rect.top
-      self.is_grounded = True
-      return
+      if isinstance(collided_sprite, Block):
+        #Snap player to the collided block
+        self.rect.bottom = collided_sprite.rect.top
+        self.is_grounded = True
+        return
+      elif isinstance(collided_sprite, Spike):
+        pass
+      elif isinstance(collided_sprite, Orb):
+        pass
     
     self.is_grounded = False
 
 
   def update(self):
-    if self.is_jumping and self.is_grounded:
-      self.jump()
-
-    if not self.is_grounded:
-      self.vel.y = min(self.vel.y + GRAVITY.y, 16) #Hardcapping falling speed at 16.
+    if self.is_grounded:
+      if self.is_jumping:
+        self.jump()
+      else:
+        self.vel.y = 0
+      self.is_jumping = False
     else:
-      self.vel.y = -0.1
+      self.vel.y = min(self.vel.y + GRAVITY.y, 16) #Hardcapping falling speed at 16.
+      
 
     #Update the position the avatar should have
     self.pos = (self.pos[0], self.pos[1] + self.vel.y)
@@ -123,8 +131,8 @@ while True:
 
   if keys[pygame.K_SPACE]:
     TEST_PLAYER.is_jumping = True
-    print("jump")
-    TEST_PLAYER.update()
+
+
 
   surf.fill((244, 250, 252))
   surf.blit(BACKGROUND_IMAGE, (0, 0))
