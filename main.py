@@ -38,11 +38,11 @@ class Player(pygame.sprite.Sprite):
     super().__init__()
     self.image = image
     self.pos = pos
-    self.avatar = Avatar(self.image, self.pos)
+    #self.avatar = Avatar(self.image, self.pos)
     self.rect = self.image.get_rect()
 
     self.vel = Vector2(0, 0)
-    self.jump_height = -10
+    self.jump_height = -12
     self.is_jumping = False
     self.is_grounded = False
     
@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):
       elif isinstance(collided_sprite, Spike):
         pass
       elif isinstance(collided_sprite, Orb):
-        pass
+        self.vel.y = self.jump_height * 2
     
     self.is_grounded = False
 
@@ -81,11 +81,13 @@ class Player(pygame.sprite.Sprite):
     self.pos = (self.pos[0], self.pos[1] + self.vel.y)
     self.rect.x = self.pos[0]
     self.rect.y = self.pos[1]
-    self.avatar.update(self.pos)
+    #self.avatar.update(self.pos)
 
   def draw(self, surf):
-    self.avatar.draw(surf)
-    pygame.draw.rect(surf, "white", self.rect, 2)
+    #self.avatar.draw(surf)
+    if not self.is_jumping:
+      surf.blit(self.image, self.pos)
+    #pygame.draw.rect(surf, "white", self.rect, 2)
 
 
 def rotate_sprite(surf, image, pos, originpos, angle):
@@ -112,7 +114,7 @@ def rotate_sprite(surf, image, pos, originpos, angle):
 
 
 TEST_PLAYER = Player(AVATAR_IMAGE, (width//2, height//2))
-player_group.add(TEST_PLAYER.avatar)
+#player_group.add(TEST_PLAYER.avatar)
 TEST_LEVEL = Level(1)
 TEST_LEVEL.load_file()
 TEST_LEVEL.load_elements()
