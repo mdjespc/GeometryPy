@@ -13,6 +13,14 @@ clock = Clock()
 width, height = 512, 500
 surf = pygame.display.set_mode((width, height))
 
+#Load level songs
+level_1_song = "music/mortals.mp3"
+level_2_song = ""
+
+pygame.mixer.init()
+pygame.mixer.music.load(level_1_song)
+pygame.mixer.music.play()
+
 
 #Constants
 GRAVITY = Vector2(0, 0.86)
@@ -87,7 +95,7 @@ class Player(pygame.sprite.Sprite):
     #self.avatar.draw(surf)
     if not self.is_jumping:
       surf.blit(self.image, self.pos)
-    #pygame.draw.rect(surf, "white", self.rect, 2)
+    pygame.draw.rect(surf, "white", self.rect, 5)
 
 
 def rotate_sprite(surf, image, pos, originpos, angle):
