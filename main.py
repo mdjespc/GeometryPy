@@ -23,8 +23,20 @@ pygame.mixer.music.play()
 
 
 #Constants
+WHITE = (255, 255, 255)
+BLACK = (0, 0 , 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+FONT = pygame.font.SysFont("lucidaconsole", 20)
+
 GRAVITY = Vector2(0, 0.86)
 FPS = 60
+
+#Global variables
+show_start_screen = True
+end_game_loop = False
 
 #Load background and player image
 BACKGROUND_IMAGE = pygame.image.load("sprites\\images\\bg.png")
@@ -68,8 +80,10 @@ class Player(pygame.sprite.Sprite):
         return
       elif isinstance(collided_sprite, Spike):
         pass
+        #pygame.quit()
+        #sys.exit()
       elif isinstance(collided_sprite, Orb):
-        self.vel.y = self.jump_height * 2
+        self.vel.y = self.jump_height * 1.5
     
     self.is_grounded = False
 
@@ -121,6 +135,20 @@ def rotate_sprite(surf, image, pos, originpos, angle):
   surf.blit(rotated_image, origin)
 
 
+def start_screen():
+    global level
+    surf.fill(BLACK)
+
+    welcome = FONT.render(f"Welcome to GeometryPy. choose level() by keypad", True, WHITE)
+
+    controls = FONT.render("Controls: jump: Space/Up exit: Esc", True, GREEN)
+
+    surf.blits([[welcome, (100, 100)], [controls, (100, 400)]])
+
+    level_memo = FONT.render(f"Level .", True, (255, 255, 0))
+    surf.blit(level_memo, (100, 200))
+
+
 TEST_PLAYER = Player(AVATAR_IMAGE, (width//2, height//2))
 #player_group.add(TEST_PLAYER.avatar)
 TEST_LEVEL = Level(1)
@@ -140,27 +168,31 @@ while True:
   keys = pygame.key.get_pressed()
 
   if keys[pygame.K_SPACE]:
+    if show_start_screen:
+      show_start_screen = False
     TEST_PLAYER.is_jumping = True
 
 
+  if show_start_screen:
+    start_screen()
+  else:
+    surf.fill((244, 250, 252))
+    surf.blit(BACKGROUND_IMAGE, (0, 0))
+    for element in TEST_LEVEL.level_elements:
+      element.update()
 
-  surf.fill((244, 250, 252))
-  surf.blit(BACKGROUND_IMAGE, (0, 0))
-  for element in TEST_LEVEL.level_elements:
-    element.update()
+    TEST_PLAYER.update()
+    if TEST_PLAYER.is_jumping:
+      angle -= 8.1712
+      rotate_sprite(surf, TEST_PLAYER.image, TEST_PLAYER.rect.center, (16, 16), angle)
 
-  TEST_PLAYER.update()
-  if TEST_PLAYER.is_jumping:
-    angle -= 8.1712
-    rotate_sprite(surf, TEST_PLAYER.image, TEST_PLAYER.rect.center, (16, 16), angle)
+    TEST_PLAYER.check_collisions(TEST_LEVEL)
+  
 
-  TEST_PLAYER.check_collisions(TEST_LEVEL)
- 
+    TEST_PLAYER.draw(surf)
 
-  TEST_PLAYER.draw(surf)
-
-  for element in TEST_LEVEL.level_elements:
-    element.draw(surf)
+    for element in TEST_LEVEL.level_elements:
+      element.draw(surf)
 
   clock.tick(FPS)
   pygame.display.update()
