@@ -53,6 +53,7 @@ class Player(pygame.sprite.Sprite):
   '''
   is_jumping: bool
   is_grounded: bool
+  is_destroyed: bool
 
   def __init__(self, image, pos):
     super().__init__()
@@ -65,15 +66,25 @@ class Player(pygame.sprite.Sprite):
     self.jump_height = -12
     self.is_jumping = False
     self.is_grounded = False
-    
+    self.is_destroyed = False
   def jump(self):
     self.vel.y = self.jump_height
     print("jump function")
+
+  def update_death_status(self, is_destroyed):
+    self.is_destroyed = is_destroyed
+
+  def reset_pos(self):
+    self.pos = (width//2, height//2)
 
   def check_collisions(self, level: Level):
     collided_sprite = pygame.sprite.spritecollideany(self, level.all_elements)
     if collided_sprite:
       if isinstance(collided_sprite, Block):
+        #Kill player if collided from the side of the block
+        if self.rect.y >= collided_sprite.rect.top:
+          self.update_death_status(True)
+
         #Snap player to the collided block
         self.rect.bottom = collided_sprite.rect.top
         self.is_grounded = True
@@ -83,7 +94,7 @@ class Player(pygame.sprite.Sprite):
         #pygame.quit()
         #sys.exit()
       elif isinstance(collided_sprite, Orb):
-        self.vel.y = self.jump_height * 1.5
+        self.jump_height = self.jump_height * 1.5
     
     self.is_grounded = False
 
@@ -107,9 +118,9 @@ class Player(pygame.sprite.Sprite):
 
   def draw(self, surf):
     #self.avatar.draw(surf)
+    #pygame.draw.rect(surf, "white", self.rect, 2)
     if not self.is_jumping:
-      surf.blit(self.image, self.pos)
-    pygame.draw.rect(surf, "white", self.rect, 5)
+      surf.blit(self.image, self.rect)
 
 
 def rotate_sprite(surf, image, pos, originpos, angle):
@@ -164,9 +175,15 @@ while True:
       pygame.quit()
       sys.exit()
 
+  if TEST_PLAYER.is_destroyed:
+    TEST_LEVEL.clear()
+    TEST_LEVEL.load_elements()
+    TEST_PLAYER.reset_pos()
+    TEST_PLAYER.update_death_status(False)
+
   #Key press listener
   keys = pygame.key.get_pressed()
-
+  TEST_PLAYER.is_jumping = False
   if keys[pygame.K_SPACE]:
     if show_start_screen:
       show_start_screen = False
