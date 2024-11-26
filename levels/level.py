@@ -74,4 +74,10 @@ class Level:
                     self.all_elements.add(obj)
                     self.all_orbs.add(obj)
         
+    def clear(self):
+        self.level_elements.clear()
+        self.all_elements.empty()
+        self.all_blocks.empty()
+        self.all_spikes.empty()
+        self.all_orbs.empty()
 
