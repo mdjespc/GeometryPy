@@ -69,7 +69,7 @@ class Player(pygame.sprite.Sprite):
     self.is_destroyed = False
   def jump(self):
     self.vel.y = self.jump_height
-    print("jump function")
+
 
   def update_death_status(self, is_destroyed):
     self.is_destroyed = is_destroyed
@@ -84,19 +84,19 @@ class Player(pygame.sprite.Sprite):
         #Kill player if collided from the side of the block
         if self.rect.y >= collided_sprite.rect.top:
           self.update_death_status(True)
+          
 
         #Snap player to the collided block
         self.rect.bottom = collided_sprite.rect.top
         self.is_grounded = True
         return
       elif isinstance(collided_sprite, Spike):
-        pass
-        #pygame.quit()
-        #sys.exit()
+        self.update_death_status(True)
       elif isinstance(collided_sprite, Orb):
-        self.jump_height = self.jump_height * 1.5
-    
-    self.is_grounded = False
+        #self.jump_height = self.jump_height * 1.5
+        pass
+    else:
+      self.is_grounded = False
 
 
   def update(self):
@@ -180,6 +180,7 @@ while True:
     TEST_LEVEL.load_elements()
     TEST_PLAYER.reset_pos()
     TEST_PLAYER.update_death_status(False)
+    pygame.mixer.music.rewind()
 
   #Key press listener
   keys = pygame.key.get_pressed()
